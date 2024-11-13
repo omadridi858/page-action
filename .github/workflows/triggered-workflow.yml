@@ -1,18 +1,11 @@
-name: Trigger Workflow Example
+name: Triggered Workflow
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  dispatch:
+  example-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger another workflow
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d '{"event_type": "trigger-build"}' \
-            "https://api.github.com/repos/${{ github.repository }}/dispatches"
+      - name: Hello World
+        run: echo "Workflow triggered successfully!"
