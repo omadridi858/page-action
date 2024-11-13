@@ -20,7 +20,9 @@ jobs:
     - name: Create Build Status File
       run: |
         echo "Build succeeded $(date)" > build-status.txt
+        chmod -R 777 _site
         mv build-status.txt _site/build-status.txt
+
 
 
     - name: Upload Site to GitHub Pages
