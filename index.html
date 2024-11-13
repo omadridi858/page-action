@@ -30,9 +30,9 @@
           ref: 'main'  // Replace 'main' with the branch name you want to use
         })
       });
-
+console.log(response.body);
       if (response.ok) {
-        alert('Workflow triggered successfully!'+response);
+        alert('Workflow triggered successfully!');
       } else {
         alert('Failed to trigger workflow.');
         console.error('Error:', await response.json());
