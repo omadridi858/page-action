@@ -1,13 +1,27 @@
-name: Manually Triggered Workflow
+name: Build and Deploy
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  run-action:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Run custom action
-        run: echo "Workflow manually triggered via API"
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Build Jekyll Site
+      uses: actions/jekyll-build-pages@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Build Status File
+      run: echo "Build succeeded $(date)" > _site/build-status.txt
+
+    - name: Upload Site to GitHub Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: _site
