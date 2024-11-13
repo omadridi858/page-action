@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Trigger GitHub Workflow</title>
+  <title>Trigger GitHub Workflow and Display Status</title>
 </head>
 <body>
 
@@ -10,6 +10,7 @@
   <label for="token">Enter GitHub Token:</label>
   <input type="password" id="token" placeholder="Your GitHub Token">
   <button onclick="triggerWorkflow()">Run Workflow</button>
+  <p id="status">Workflow Status: Not Started</p>
 
   <script>
     async function triggerWorkflow() {
@@ -20,7 +21,7 @@
         return;
       }
 
-      const response = await fetch('https://api.github.com/repos/omadridi858/page-action/actions/workflows/triggered-workflow.yml/dispatches', {
+      const triggerResponse = await fetch('https://api.github.com/repos/omadridi858/page-action/actions/workflows/triggered-workflow.yml/dispatches', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -31,11 +32,43 @@
         })
       });
 
-      if (response.ok) {
-        alert('Workflow triggered successfully!');
+      if (triggerResponse.ok) {
+        document.getElementById('status').textContent = 'Workflow Status: Triggered';
+        await checkWorkflowStatus(token);
       } else {
         alert('Failed to trigger workflow.');
-        console.error('Error:', await response.json());
+        console.error('Error:', await triggerResponse.json());
+      }
+    }
+
+    async function checkWorkflowStatus(token) {
+      try {
+        // Poll every 5 seconds to check the workflow status
+        const interval = setInterval(async () => {
+          const response = await fetch('https://api.github.com/repos/omadridi858/page-action/actions/runs', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            const latestRun = data.workflow_runs[0];  // Get the latest run
+
+            // Update the status text
+            document.getElementById('status').textContent = `Workflow Status: ${latestRun.status}, Conclusion: ${latestRun.conclusion || 'In Progress'}`;
+
+            // Stop polling if the workflow is complete
+            if (latestRun.status === 'completed') {
+              clearInterval(interval);
+            }
+          } else {
+            console.error('Error fetching workflow status:', await response.json());
+          }
+        }, 5000); // Poll every 5 seconds
+      } catch (error) {
+        console.error('Error:', error);
       }
     }
   </script>
