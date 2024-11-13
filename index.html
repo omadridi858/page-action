@@ -55,9 +55,9 @@
           if (response.ok) {
             const data = await response.json();
             const latestRun = data.workflow_runs[0];  // Get the latest run
-
+document.getElementById('status').textContent = ``;
             // Update the status text
-            document.getElementById('status').textContent = `Workflow Status: ${latestRun.status}, Conclusion: ${latestRun.conclusion || 'In Progress'}`;
+            document.getElementById('status').textContent += `Workflow Status: ${latestRun.status}, Conclusion: ${latestRun.conclusion || 'In Progress'}`;
 
             // Stop polling if the workflow is complete
             if (latestRun.status === 'completed') {
