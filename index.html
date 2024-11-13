@@ -1,21 +1,44 @@
-<button onclick="triggerWorkflow()">Run Workflow</button>
-<script>
-  async function triggerWorkflow() {
-    const response = await fetch('https://api.github.com/repos/omadridi858/page-action/actions/workflows/triggered-workflow.yml/dispatches', {
-      method: 'POST',
-      headers: {
-        'Authorization': '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',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify({
-        ref: 'main'
-      })
-    });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trigger GitHub Workflow</title>
+</head>
+<body>
 
-    if (response.ok) {
-      alert('Workflow triggered successfully!');
-    } else {
-      alert('Failed to trigger workflow.');
+  <h2>Trigger GitHub Workflow</h2>
+  <label for="token">Enter GitHub Token:</label>
+  <input type="password" id="token" placeholder="Your GitHub Token">
+  <button onclick="triggerWorkflow()">Run Workflow</button>
+
+  <script>
+    async function triggerWorkflow() {
+      const token = document.getElementById('token').value;
+      
+      if (!token) {
+        alert('Please enter your GitHub token');
+        return;
+      }
+
+      const response = await fetch('https://api.github.com/repos/omadridi858/page-action/actions/workflows/triggered-workflow.yml/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify({
+          ref: 'main'  // Replace 'main' with your branch name, if different
+        })
+      });
+
+      if (response.ok) {
+        alert('Workflow triggered successfully!');
+      } else {
+        alert('Failed to trigger workflow.');
+        console.error('Error:', await response.json());
+      }
     }
-  }
-</script>
+  </script>
+
+</body>
+</html>
