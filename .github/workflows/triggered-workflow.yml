@@ -17,9 +17,11 @@ jobs:
       uses: actions/jekyll-build-pages@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Create Build Status File
-      run: echo "Build succeeded $(date)" > _site/build-status.txt
+      run: |
+        echo "Build succeeded $(date)" > build-status.txt
+        mv build-status.txt _site/build-status.txt
+
 
     - name: Upload Site to GitHub Pages
       uses: actions/upload-pages-artifact@v3
