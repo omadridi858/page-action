@@ -2,23 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Build Status</title>
+  <title>Trigger GitHub Workflow</title>
 </head>
 <body>
-  <h1>Welcome to the Build Status Page</h1>
-  <div id="build-status">Loading build status...</div>
+
+  <h2>Trigger GitHub Workflow</h2>
+  <label for="token">Enter GitHub Token:</label>
+  <input type="password" id="token" placeholder="Your GitHub Token">
+  <button onclick="triggerWorkflow()">Run Workflow</button>
 
   <script>
-    fetch('build-status.txt')
-      .then(response => response.text())
-      .then(text => {
-        document.getElementById('build-status').innerText = text;
-      })
-      .catch(error => {
-        document.getElementById('build-status').innerText = 'Failed to load build status.';
-        console.error('Error fetching build status:', error);
+    async function triggerWorkflow() {
+      const token = document.getElementById('token').value;
+      
+      if (!token) {
+        alert('Please enter your GitHub token');
+        return;
+      }
+
+      const response = await fetch('https://api.github.com/repos/omadridi858/page-action/actions/workflows/triggered-workflow.yml/dispatches', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify({
+          ref: 'main'  // Replace 'main' with the branch name you want to use
+        })
       });
+
+      if (response.ok) {
+        alert('Workflow triggered successfully!');
+      } else {
+        alert('Failed to trigger workflow.');
+        console.error('Error:', await response.json());
+      }
+    }
   </script>
+
 </body>
 </html>
+
