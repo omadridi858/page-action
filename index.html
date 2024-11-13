@@ -32,7 +32,7 @@
       });
 
       if (response.ok) {
-        alert('Workflow triggered successfully!');
+        alert('Workflow triggered successfully!'+response);
       } else {
         alert('Failed to trigger workflow.');
         console.error('Error:', await response.json());
