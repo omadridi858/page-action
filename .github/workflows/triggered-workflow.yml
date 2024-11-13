@@ -1,15 +1,18 @@
-name: Run Workflow on Page Update
+name: Trigger Workflow Example
 
 on:
   push:
-    paths:
-      - 'index.html'
+    branches:
+      - main
 
 jobs:
-  run-action:
+  dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Run your custom action
-        run: echo "Workflow triggered by an update to index.html"
+      - name: Trigger another workflow
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"event_type": "trigger-build"}' \
+            "https://api.github.com/repos/${{ github.repository }}/dispatches"
