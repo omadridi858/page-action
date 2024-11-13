@@ -1,29 +1,15 @@
-name: Build and Deploy
+name: Run Workflow on Page Update
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'index.html'
 
 jobs:
-  build:
+  run-action:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Build Jekyll Site
-      uses: actions/jekyll-build-pages@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Create build-status file
-      run: |
-        echo "Build succeeded $(date)" > build-status.txt
-
-    - name: Upload build status to GitHub using API
-      run: |
-        curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-        -H "Accept: application/vnd.github.v3+json" \
-        -d '{"message": "Add build status", "committer": {"name": "GitHub Actions", "email": "actions@github.com"}, "content": "$(base64 -w 0 build-status.txt)"}' \
-        https://api.github.com/repos/${{ github.repository }}/contents/_site/build-status.txt
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Run your custom action
+        run: echo "Workflow triggered by an update to index.html"
