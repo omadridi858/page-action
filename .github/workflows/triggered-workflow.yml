@@ -17,15 +17,13 @@ jobs:
       uses: actions/jekyll-build-pages@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Create Build Status File
+    - name: Create build-status file
       run: |
-        mkdir -p _site
         echo "Build succeeded $(date)" > build-status.txt
-        mv build-status.txt _site/build-status.txt
 
-
-
-    - name: Upload Site to GitHub Pages
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: _site
+    - name: Upload build status to GitHub using API
+      run: |
+        curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        -d '{"message": "Add build status", "committer": {"name": "GitHub Actions", "email": "actions@github.com"}, "content": "$(base64 -w 0 build-status.txt)"}' \
+        https://api.github.com/repos/${{ github.repository }}/contents/_site/build-status.txt
